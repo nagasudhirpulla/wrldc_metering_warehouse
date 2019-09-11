@@ -19,17 +19,17 @@ hour_of_day, blk1_freq_code, blk1_active energy(Watt Hour), … till block 4
 import datetime as dt
 
 class RawMeterCumData:
-    date_obj = None
+    data_time = None
     meter_id = None
     cumm_active_energy_wh = None
     cumm_reactive_energy_high_wh = None
     cumm_reactive_energy_low_wh = None
-    def __init__(self, date_obj, meter_id, cumm_active_energy_wh, cumm_reactive_energy_high_wh, cumm_reactive_energy_low_wh):
+    def __init__(self, data_time, meter_id, cumm_active_energy_wh, cumm_reactive_energy_high_wh, cumm_reactive_energy_low_wh):
         self.meter_id = meter_id
         self.cumm_active_energy_wh = cumm_active_energy_wh
         self.cumm_reactive_energy_high_wh = cumm_reactive_energy_high_wh
         self.cumm_reactive_energy_low_wh = cumm_reactive_energy_low_wh
-        self.date_obj = date_obj
+        self.data_time = data_time
     
     @staticmethod
     def parse(txtLine):
@@ -41,20 +41,20 @@ class RawMeterCumData:
         cumm_active_energy_wh = float(strs[1])
         cumm_reactive_energy_high_wh = float(strs[2])
         cumm_reactive_energy_low_wh = float(strs[3])
-        date_obj = dt.datetime.strptime(strs[4], '%m-%d-%y').date()
-        meterHeader = RawMeterCumData(date_obj, meter_id, cumm_active_energy_wh, cumm_reactive_energy_high_wh, cumm_reactive_energy_low_wh)
+        data_time = dt.datetime.strptime(strs[4], '%m-%d-%y').date()
+        meterHeader = RawMeterCumData(data_time, meter_id, cumm_active_energy_wh, cumm_reactive_energy_high_wh, cumm_reactive_energy_low_wh)
         return meterHeader
     
     def dict(self):
         return self.__dict__
 
 class RawMeterData:
-    timestamp = None
+    data_time = None
     meter_id = None
     freq_code = None
     act_en_wh = None
-    def __init__(self, timestamp, meter_id, freq_code, act_en_wh):
-        self.timestamp = timestamp
+    def __init__(self, data_time, meter_id, freq_code, act_en_wh):
+        self.data_time = data_time
         self.meter_id = meter_id
         self.freq_code = freq_code
         self.act_en_wh = act_en_wh
@@ -70,8 +70,8 @@ class RawMeterData:
         blkActEns = [float(strs[2]), float(strs[4]), float(strs[6]), float(strs[8])]
         dataRes = []
         for blkNum in range(0, 4):
-            timestamp = dt.datetime(date_obj.year, date_obj.month, date_obj.day, hr, 0, 0) + dt.timedelta(minutes=15*blkNum)
-            blkData = RawMeterData(timestamp, meter_id, blkFreqCodes[blkNum], blkActEns[blkNum])
+            data_time = dt.datetime(date_obj.year, date_obj.month, date_obj.day, hr, 0, 0) + dt.timedelta(minutes=15*blkNum)
+            blkData = RawMeterData(data_time, meter_id, blkFreqCodes[blkNum], blkActEns[blkNum])
             dataRes.append(blkData)
         return dataRes
     
@@ -87,9 +87,9 @@ class RawMeterDataParser:
             return None
         # get the day info object
         dayInfo = RawMeterCumData.parse(txtLines[0])
-        dateObj = dayInfo.date_obj
+        dateObj = dayInfo.data_time
         meterId = dayInfo.meter_id
         blksInfo = []
         for lineIter in range(1,25):
             blksInfo = blksInfo + RawMeterData.parse(dateObj, meterId, txtLines[lineIter])
-        return {'cumData':dayInfo, 'blksData': blksInfo}
+        return dict(cumData=dayInfo, blksData=blksInfo)

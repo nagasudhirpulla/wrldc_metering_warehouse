@@ -3,17 +3,17 @@ import os
 
 
 def getWarehouseDbConfigDict():
-    source_db_name = os.getenv('METER_WAREHOUSE_DB_NAME', 'db_name')
-    source_db_username = os.getenv('METER_WAREHOUSE_DB_USERNAME', 'username')
-    source_db_password = os.getenv('METER_WAREHOUSE_DB_PASSWORD', 'password')
-    source_db_host = os.getenv('METER_WAREHOUSE_DB_HOST', 'hostip')
-    source_db_port = os.getenv('METER_WAREHOUSE_DB_PORT', 'source_db_port')
+    db_name = os.getenv('METER_WAREHOUSE_DB_NAME', 'db_name')
+    db_username = os.getenv('METER_WAREHOUSE_DB_USERNAME', 'username')
+    db_password = os.getenv('METER_WAREHOUSE_DB_PASSWORD', 'password')
+    db_host = os.getenv('METER_WAREHOUSE_DB_HOST', 'hostip')
+    db_port = os.getenv('METER_WAREHOUSE_DB_PORT', 'db_port')
 
     db_conn_dict = dict(
-        source_db_name=source_db_name,
-        source_db_username=source_db_username,
-        source_db_password=source_db_password,
-        source_db_host=source_db_host,
-        source_db_port=source_db_port
+        db_name=db_name,
+        db_username=db_username,
+        db_password=db_password,
+        db_host=db_host,
+        db_port=db_port
     )
     return db_conn_dict
