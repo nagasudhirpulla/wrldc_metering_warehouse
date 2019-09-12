@@ -22,14 +22,11 @@ class FictMasterData:
         self.parse(filename, sheetName)
         self.pushToDb()
     
-    def parse(self, filename = 'meter_master_data.xlsx', sheetName=0):
+    def parse(self, filename = 'fic_meter_files/fict_meter_master.xlsx', sheetName=0):
         # read master data excel
         df = pd.read_excel(filename, sheet_name = sheetName)        
-
-        # todo check if the column types are ok
-        
         # check if the column names are ok
-        reqColNames = ['from_date', 'location_id', 'formula', 'name', 'description']
+        reqColNames = ['from_time', 'location_id', 'formula', 'name', 'description']
         if(df.columns.tolist()[0:5] != reqColNames):
             print('columns not as desired in master data excel file')
             return        
@@ -74,7 +71,7 @@ class FictMasterData:
         # close cursor and connection
         cur.close()
         conn.close()
-        print('Master data overwrite done')
+        print('Fict meter Master data overwrite done')
         
     '''
     Loads master data from db
