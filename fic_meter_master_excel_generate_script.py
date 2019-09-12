@@ -10,11 +10,11 @@ for location formula, strip the lines below the definition line till the next lo
 import sys
 import pandas as pd
 
-outFilePath = 'fic_meter_files/fict_meter_excel.xlsx'
+outFilePath = 'secret/fict_meter_excel.xlsx'
 outSheetName = 'Sheet1'
 # read the cfg file and dat file in the folder
-inputCfgPath = 'fic_meter_files/FICTMTRS.CFG'
-inputDatPath = 'fic_meter_files/FICTMTRS.DAT'
+inputCfgPath = 'secret/FICTMTRS.CFG'
+inputDatPath = 'secret/FICTMTRS.DAT'
 
 # parse the cfg file
 txtFile = open(inputCfgPath, "r")
@@ -88,7 +88,7 @@ if pageEndLineInd == -1:
     sys.exit('page end not found')
 
 # find the word segements till before description
-datCols = ['location_id', 'name', 'description']
+datCols = ['location_id', 'loc_name', 'description']
 datRows = []
 for lineIter in range(pageStartLineInd, pageEndLineInd):
     # for name of meter strip the text between ()

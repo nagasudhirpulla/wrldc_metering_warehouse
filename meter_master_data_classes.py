@@ -19,11 +19,11 @@ class MeterMasterData:
     '''
     masterDataDf = None
     
-    def PushExcelToDb(self, filename = 'meter_master_data.xlsx', sheetName=0):
+    def PushExcelToDb(self, filename = 'secret/meter_master_data.xlsx', sheetName=0):
         self.parse(filename, sheetName)
         self.pushToDb()
     
-    def parse(self, filename = 'meter_master_data.xlsx', sheetName=0):
+    def parse(self, filename = 'secret/meter_master_data.xlsx', sheetName=0):
         # read master data excel
         df = pd.read_excel(filename, sheet_name = sheetName)        
 

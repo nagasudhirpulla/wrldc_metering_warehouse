@@ -13,20 +13,20 @@ from warehouse_db_config import getWarehouseDbConfigDict
 class FictMasterData:
     '''
     returns meter master data dataframe with columns
-    'from_date', 'location_id', 'formula', 'name', 'description'
+    'from_date', 'location_id', 'formula', 'loc_name', 'description'
     return None in case of problem
     '''
     masterDataDf = None
     
-    def PushExcelToDb(self, filename = 'fic_meter_files/fict_meter_master.xlsx', sheetName=0):
+    def PushExcelToDb(self, filename = 'secret/fict_meter_master.xlsx', sheetName=0):
         self.parse(filename, sheetName)
         self.pushToDb()
     
-    def parse(self, filename = 'fic_meter_files/fict_meter_master.xlsx', sheetName=0):
+    def parse(self, filename = 'secret/fict_meter_master.xlsx', sheetName=0):
         # read master data excel
         df = pd.read_excel(filename, sheet_name = sheetName)        
         # check if the column names are ok
-        reqColNames = ['from_time', 'location_id', 'formula', 'name', 'description']
+        reqColNames = ['from_time', 'location_id', 'formula', 'loc_name', 'description']
         if(df.columns.tolist()[0:5] != reqColNames):
             print('columns not as desired in master data excel file')
             return        
@@ -55,7 +55,7 @@ class FictMasterData:
             for insRowIter in range(rowIter, iteratorEndVal):
                 dataRow = self.masterDataDf.iloc[insRowIter]
     
-                dataInsertionTuple = (dataRow.from_time.strftime('%Y-%m-%d %H:%M:%S'), dataRow.location_id, dataRow.formula, dataRow.name, dataRow.description)
+                dataInsertionTuple = (dataRow.from_time.strftime('%Y-%m-%d %H:%M:%S'), dataRow.location_id, dataRow.formula, dataRow.loc_name, dataRow.description)
                 dataInsertionTuples.append(dataInsertionTuple)
     
             # prepare sql for insertion and execute
