@@ -43,6 +43,7 @@ CREATE TABLE public.meter_master_data
     description character varying(500) COLLATE pg_catalog."default",
     created_at time without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status character varying(10) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT meter_master_data_pkey PRIMARY KEY (id),
     CONSTRAINT from_time_location_id_unique UNIQUE (from_time, location_id)
 
@@ -64,26 +65,6 @@ CREATE TRIGGER meter_master_data_updated_at_modtime
     ON public.meter_master_data
     FOR EACH ROW
     EXECUTE PROCEDURE public.update_updated_at_column();
-
-
--- FUNCTION: public.update_updated_at_column()
-
--- DROP FUNCTION public.update_updated_at_column();
-
-CREATE FUNCTION public.update_updated_at_column()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF 
-AS $BODY$
-  BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-  END;
-$BODY$;
-
-ALTER FUNCTION public.update_updated_at_column()
-    OWNER TO postgres;
 
 
 

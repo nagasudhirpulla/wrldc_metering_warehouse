@@ -3,6 +3,7 @@
 Created on Wed Sep 11 12:04:28 2019
 
 @author: Nagasudhir
+The meter master data file contains only the master data of physical meters
 """
 
 import pandas as pd
@@ -29,8 +30,8 @@ class MeterMasterData:
         # todo check if the column types are ok
         
         # check if the column names are ok
-        reqColNames = ['from_time', 'location_id', 'meter_id', 'ct_ratio', 'pt_ratio', 'description']
-        if(df.columns.tolist()[0:6] != reqColNames):
+        reqColNames = ['from_time', 'location_id', 'meter_id', 'ct_ratio', 'pt_ratio', 'status', 'description']
+        if(df.columns.tolist()[0:7] != reqColNames):
             print('columns not as desired in master data excel file')
             return        
         self.masterDataDf = df
@@ -58,16 +59,16 @@ class MeterMasterData:
             for insRowIter in range(rowIter, iteratorEndVal):
                 dataRow = self.masterDataDf.iloc[insRowIter]
     
-                dataInsertionTuple = (dataRow.from_time.strftime('%Y-%m-%d %H:%M:%S'), dataRow.location_id, dataRow.meter_id, float(dataRow.ct_ratio), float(dataRow.pt_ratio), dataRow.description)
+                dataInsertionTuple = (dataRow.from_time.strftime('%Y-%m-%d %H:%M:%S'), dataRow.location_id, dataRow.meter_id, float(dataRow.ct_ratio), float(dataRow.pt_ratio), dataRow.status, dataRow.description)
                 dataInsertionTuples.append(dataInsertionTuple)
     
             # prepare sql for insertion and execute
-            dataText = ','.join(cur.mogrify('(%s,%s,%s,%s,%s,%s)', row).decode("utf-8") for row in dataInsertionTuples)
+            dataText = ','.join(cur.mogrify('(%s,%s,%s,%s,%s,%s,%s)', row).decode("utf-8") for row in dataInsertionTuples)
             cur.execute('INSERT INTO public.meter_master_data(\
-        	from_time, location_id, meter_id, ct_ratio, pt_ratio, description)\
+        	from_time, location_id, meter_id, ct_ratio, pt_ratio, status, description)\
         	VALUES {0} on conflict (from_time, location_id) \
             do update set meter_id = excluded.meter_id, ct_ratio = excluded.ct_ratio, pt_ratio = excluded.pt_ratio, \
-            description = excluded.description'.format(dataText))
+            status = excluded.status, description = excluded.description'.format(dataText))
             conn.commit()
     
             rowIter = iteratorEndVal
@@ -97,6 +98,7 @@ class MeterMasterData:
     meter_id                               hgjhgjh
     ct_ratio                                   500
     pt_ratio                               3636.36
+    status                                       M
     description    400kV SIDE OF GT1 AT KORBA STPS
     Name: 0, dtype: object
     '''

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 https://www.mkyong.com/python/python-how-to-list-all-files-in-a-directory/
+raw meter data files have extension NPD
 """
 
 from raw_meter_data_classes import RawMeterDataParser
@@ -11,7 +12,7 @@ import glob
 class RawMeterDataAdapter:
     conn = None    
     def pushFolderDataToDb(self, folderpath='', recursive=True):
-        fileFormat = 'txt'
+        fileFormat = 'NPD'
         files = [f for f in glob.glob(folderpath + "**/*." + fileFormat, recursive=recursive)]
         for filepath in files:
             self.pushFileDataToDb(filepath)
