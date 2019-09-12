@@ -81,9 +81,10 @@ class RawMeterData:
 class RawMeterDataParser:
     @staticmethod
     def ParseRawMeterData(txt):
+        print(txt)
         txtLines = txt.splitlines()
         # check if we have 26 lines
-        if len(txtLines) != 26:
+        if len(txtLines) < 26:
             return None
         # get the day info object
         dayInfo = RawMeterCumData.parse(txtLines[0])

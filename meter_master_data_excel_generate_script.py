@@ -4,6 +4,7 @@ Created on Thu Sep 12 12:29:12 2019
 
 @author: Nagasudhir
 """
+import sys
 import pandas as pd
 inputFilePath = 'MASTER_T.DAT'
 outputFilePath = 'master_data.xlsx'
@@ -21,7 +22,7 @@ for lineIter in range(len(txtLines)):
         break
 
 if pageStartLineInd == -1:
-    print('page start not found')
+    sys.exit('page start not found')
 
 pageEndLineInd = pageStartLineInd
 for lineIter in range(pageStartLineInd, len(txtLines)):
@@ -30,7 +31,7 @@ for lineIter in range(pageStartLineInd, len(txtLines)):
         break
 
 if pageEndLineInd == -1:
-    print('page end not found')
+    sys.exit('page end not found')
 
 # find the word segements till before description
 dataColumnNames = ['location_id', 'meter_id', 'ct_ratio', 'pt_ratio', 'status', 'description']

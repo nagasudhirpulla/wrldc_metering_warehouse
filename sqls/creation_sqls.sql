@@ -91,3 +91,41 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.raw_meter_cum_data
     OWNER to postgres;
+
+
+
+-- Table: public.fict_master_data
+
+-- DROP TABLE public.fict_master_data;
+
+CREATE TABLE public.fict_master_data
+(
+    id integer NOT NULL DEFAULT nextval('fict_master_data_id_seq'::regclass) ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    from_time timestamp without time zone NOT NULL,
+    location_id character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    loc_formula character varying(500) COLLATE pg_catalog."default" NOT NULL,
+    loc_name character varying(100) COLLATE pg_catalog."default",
+    description character varying(500) COLLATE pg_catalog."default",
+    created_at time without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fict_master_data_pkey PRIMARY KEY (id),
+    CONSTRAINT fict_master_from_time_location_id_unique UNIQUE (from_time, location_id)
+
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.fict_master_data
+    OWNER to postgres;
+
+-- Trigger: fict_master_data_updated_at_modtime
+
+-- DROP TRIGGER fict_master_data_updated_at_modtime ON public.fict_master_data;
+
+CREATE TRIGGER fict_master_data_updated_at_modtime
+    BEFORE UPDATE 
+    ON public.fict_master_data
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.update_updated_at_column();

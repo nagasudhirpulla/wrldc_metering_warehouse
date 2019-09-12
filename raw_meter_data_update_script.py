@@ -9,5 +9,5 @@ from raw_meter_data_adapter import RawMeterDataAdapter
 
 adapter = RawMeterDataAdapter()
 adapter.connectToDb()
-adapter.pushFolderDataToDb(folderpath='secrets')
+adapter.pushFolderDataToDb(folderpath='secret')
 adapter.disconnectDb()
