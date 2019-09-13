@@ -5,7 +5,7 @@
 -- Dumped from database version 11.2
 -- Dumped by pg_dump version 11.2
 
--- Started on 2019-09-13 13:01:29
+-- Started on 2019-09-13 14:26:05
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -39,7 +39,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 207 (class 1259 OID 26121)
+-- TOC entry 205 (class 1259 OID 26121)
 -- Name: fict_location_energy_data; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -54,7 +54,7 @@ CREATE TABLE public.fict_location_energy_data (
 ALTER TABLE public.fict_location_energy_data OWNER TO postgres;
 
 --
--- TOC entry 206 (class 1259 OID 26119)
+-- TOC entry 204 (class 1259 OID 26119)
 -- Name: fict_location_energy_data_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -71,7 +71,7 @@ ALTER TABLE public.fict_location_energy_data_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2880 (class 0 OID 0)
--- Dependencies: 206
+-- Dependencies: 204
 -- Name: fict_location_energy_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -79,7 +79,7 @@ ALTER SEQUENCE public.fict_location_energy_data_id_seq OWNED BY public.fict_loca
 
 
 --
--- TOC entry 203 (class 1259 OID 26086)
+-- TOC entry 201 (class 1259 OID 26086)
 -- Name: fict_master_data; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -98,7 +98,7 @@ CREATE TABLE public.fict_master_data (
 ALTER TABLE public.fict_master_data OWNER TO postgres;
 
 --
--- TOC entry 202 (class 1259 OID 26084)
+-- TOC entry 200 (class 1259 OID 26084)
 -- Name: fict_master_data_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -115,7 +115,7 @@ ALTER TABLE public.fict_master_data_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2881 (class 0 OID 0)
--- Dependencies: 202
+-- Dependencies: 200
 -- Name: fict_master_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -123,7 +123,7 @@ ALTER SEQUENCE public.fict_master_data_id_seq OWNED BY public.fict_master_data.i
 
 
 --
--- TOC entry 205 (class 1259 OID 26111)
+-- TOC entry 203 (class 1259 OID 26111)
 -- Name: location_energy_data; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -139,7 +139,7 @@ CREATE TABLE public.location_energy_data (
 ALTER TABLE public.location_energy_data OWNER TO postgres;
 
 --
--- TOC entry 204 (class 1259 OID 26109)
+-- TOC entry 202 (class 1259 OID 26109)
 -- Name: location_energy_data_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -156,7 +156,7 @@ ALTER TABLE public.location_energy_data_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2882 (class 0 OID 0)
--- Dependencies: 204
+-- Dependencies: 202
 -- Name: location_energy_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -164,7 +164,7 @@ ALTER SEQUENCE public.location_energy_data_id_seq OWNED BY public.location_energ
 
 
 --
--- TOC entry 199 (class 1259 OID 26055)
+-- TOC entry 207 (class 1259 OID 26146)
 -- Name: meter_master_data; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -175,17 +175,18 @@ CREATE TABLE public.meter_master_data (
     meter_id character varying(100) NOT NULL,
     ct_ratio real NOT NULL,
     pt_ratio real NOT NULL,
-    description character varying(500),
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     status character varying(10) NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    resolution real NOT NULL,
+    description character varying(500),
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
 ALTER TABLE public.meter_master_data OWNER TO postgres;
 
 --
--- TOC entry 198 (class 1259 OID 26053)
+-- TOC entry 206 (class 1259 OID 26144)
 -- Name: meter_master_data_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -202,7 +203,7 @@ ALTER TABLE public.meter_master_data_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2883 (class 0 OID 0)
--- Dependencies: 198
+-- Dependencies: 206
 -- Name: meter_master_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -210,7 +211,7 @@ ALTER SEQUENCE public.meter_master_data_id_seq OWNED BY public.meter_master_data
 
 
 --
--- TOC entry 201 (class 1259 OID 26072)
+-- TOC entry 199 (class 1259 OID 26072)
 -- Name: raw_meter_cum_data; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -227,7 +228,7 @@ CREATE TABLE public.raw_meter_cum_data (
 ALTER TABLE public.raw_meter_cum_data OWNER TO postgres;
 
 --
--- TOC entry 200 (class 1259 OID 26070)
+-- TOC entry 198 (class 1259 OID 26070)
 -- Name: raw_meter_cum_data_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -244,7 +245,7 @@ ALTER TABLE public.raw_meter_cum_data_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2884 (class 0 OID 0)
--- Dependencies: 200
+-- Dependencies: 198
 -- Name: raw_meter_cum_data_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -293,7 +294,7 @@ ALTER SEQUENCE public.raw_meter_data_id_seq OWNED BY public.raw_meter_data.id;
 
 
 --
--- TOC entry 2727 (class 2604 OID 26124)
+-- TOC entry 2724 (class 2604 OID 26124)
 -- Name: fict_location_energy_data id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -301,7 +302,7 @@ ALTER TABLE ONLY public.fict_location_energy_data ALTER COLUMN id SET DEFAULT ne
 
 
 --
--- TOC entry 2723 (class 2604 OID 26089)
+-- TOC entry 2720 (class 2604 OID 26089)
 -- Name: fict_master_data id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -309,7 +310,7 @@ ALTER TABLE ONLY public.fict_master_data ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 2726 (class 2604 OID 26114)
+-- TOC entry 2723 (class 2604 OID 26114)
 -- Name: location_energy_data id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -317,7 +318,7 @@ ALTER TABLE ONLY public.location_energy_data ALTER COLUMN id SET DEFAULT nextval
 
 
 --
--- TOC entry 2719 (class 2604 OID 26058)
+-- TOC entry 2725 (class 2604 OID 26149)
 -- Name: meter_master_data id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -325,7 +326,7 @@ ALTER TABLE ONLY public.meter_master_data ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 2722 (class 2604 OID 26075)
+-- TOC entry 2719 (class 2604 OID 26075)
 -- Name: raw_meter_cum_data id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -341,7 +342,7 @@ ALTER TABLE ONLY public.raw_meter_data ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 2737 (class 2606 OID 26079)
+-- TOC entry 2733 (class 2606 OID 26079)
 -- Name: raw_meter_cum_data data_time_meter_id_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -350,7 +351,7 @@ ALTER TABLE ONLY public.raw_meter_cum_data
 
 
 --
--- TOC entry 2749 (class 2606 OID 26126)
+-- TOC entry 2745 (class 2606 OID 26126)
 -- Name: fict_location_energy_data fict_location_energy_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -359,7 +360,7 @@ ALTER TABLE ONLY public.fict_location_energy_data
 
 
 --
--- TOC entry 2751 (class 2606 OID 26128)
+-- TOC entry 2747 (class 2606 OID 26128)
 -- Name: fict_location_energy_data fict_location_energy_location_id_data_time_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -368,7 +369,7 @@ ALTER TABLE ONLY public.fict_location_energy_data
 
 
 --
--- TOC entry 2741 (class 2606 OID 26096)
+-- TOC entry 2737 (class 2606 OID 26096)
 -- Name: fict_master_data fict_master_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -377,7 +378,7 @@ ALTER TABLE ONLY public.fict_master_data
 
 
 --
--- TOC entry 2743 (class 2606 OID 26098)
+-- TOC entry 2739 (class 2606 OID 26098)
 -- Name: fict_master_data fict_master_from_time_location_id_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -386,7 +387,7 @@ ALTER TABLE ONLY public.fict_master_data
 
 
 --
--- TOC entry 2733 (class 2606 OID 26067)
+-- TOC entry 2749 (class 2606 OID 26158)
 -- Name: meter_master_data from_time_location_id_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -395,7 +396,7 @@ ALTER TABLE ONLY public.meter_master_data
 
 
 --
--- TOC entry 2745 (class 2606 OID 26116)
+-- TOC entry 2741 (class 2606 OID 26116)
 -- Name: location_energy_data location_energy_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -404,7 +405,7 @@ ALTER TABLE ONLY public.location_energy_data
 
 
 --
--- TOC entry 2747 (class 2606 OID 26118)
+-- TOC entry 2743 (class 2606 OID 26118)
 -- Name: location_energy_data location_energy_location_id_data_time_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -422,7 +423,7 @@ ALTER TABLE ONLY public.raw_meter_data
 
 
 --
--- TOC entry 2735 (class 2606 OID 26065)
+-- TOC entry 2751 (class 2606 OID 26156)
 -- Name: meter_master_data meter_master_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -431,7 +432,7 @@ ALTER TABLE ONLY public.meter_master_data
 
 
 --
--- TOC entry 2739 (class 2606 OID 26077)
+-- TOC entry 2735 (class 2606 OID 26077)
 -- Name: raw_meter_cum_data raw_meter_cum_data_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -449,7 +450,7 @@ ALTER TABLE ONLY public.raw_meter_data
 
 
 --
--- TOC entry 2753 (class 2620 OID 26099)
+-- TOC entry 2752 (class 2620 OID 26099)
 -- Name: fict_master_data fict_master_data_updated_at_modtime; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -457,14 +458,14 @@ CREATE TRIGGER fict_master_data_updated_at_modtime BEFORE UPDATE ON public.fict_
 
 
 --
--- TOC entry 2752 (class 2620 OID 26069)
+-- TOC entry 2753 (class 2620 OID 26159)
 -- Name: meter_master_data meter_master_data_updated_at_modtime; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
 CREATE TRIGGER meter_master_data_updated_at_modtime BEFORE UPDATE ON public.meter_master_data FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
 
 
--- Completed on 2019-09-13 13:01:30
+-- Completed on 2019-09-13 14:26:05
 
 --
 -- PostgreSQL database dump complete
