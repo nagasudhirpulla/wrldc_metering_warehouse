@@ -8,6 +8,7 @@ from raw_meter_data_classes import RawMeterDataParser
 import psycopg2
 from warehouse_db_config import getWarehouseDbConfigDict
 import glob
+import pandas.io.sql as sqlio
 
 class RawMeterDataAdapter:
     conn = None    
@@ -87,3 +88,13 @@ class RawMeterDataAdapter:
         # close cursor and connection
         cur.close()
         print('Raw Meter data push done')
+    
+    @staticmethod
+    def getMeterRawBlksDataFromDb(self, meterId, fromTime, toTime):
+        warehouseConfigDict = getWarehouseDbConfigDict()
+        conn = psycopg2.connect(host=warehouseConfigDict['db_host'], dbname=warehouseConfigDict['db_name'],
+                            user=warehouseConfigDict['db_username'], password=warehouseConfigDict['db_password'])
+        sql = "select * from public.raw_meter_data where meter_id = '{0}' and data_time between '{1}' and '{2}'".format(meterId, fromTime.strftime('%Y-%m-%d %H:%M:%S'), toTime.strftime('%Y-%m-%d %H:%M:%S'))
+        df = sqlio.read_sql_query(sql, conn, index_col='id')
+        conn = None
+        return df
