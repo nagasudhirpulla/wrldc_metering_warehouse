@@ -6,8 +6,8 @@ Created on Thu Sep 12 12:29:12 2019
 """
 import sys
 import pandas as pd
-inputFilePath = 'MASTER_T.DAT'
-outputFilePath = 'master_data.xlsx'
+inputFilePath = 'secret/MASTER_T.DAT'
+outputFilePath = 'secret/master_data.xlsx'
 outSheetName = 'Sheet1'
 
 txtFile = open(inputFilePath, "r")
