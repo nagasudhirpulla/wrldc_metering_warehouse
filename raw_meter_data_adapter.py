@@ -90,7 +90,7 @@ class RawMeterDataAdapter:
         print('Raw Meter data push done')
     
     @staticmethod
-    def getMeterRawBlksDataFromDb(self, meterId, fromTime, toTime):
+    def getMeterRawBlksDataFromDb(meterId, fromTime, toTime):
         warehouseConfigDict = getWarehouseDbConfigDict()
         conn = psycopg2.connect(host=warehouseConfigDict['db_host'], dbname=warehouseConfigDict['db_name'],
                             user=warehouseConfigDict['db_username'], password=warehouseConfigDict['db_password'])

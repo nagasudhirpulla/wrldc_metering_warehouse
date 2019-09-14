@@ -8,13 +8,13 @@ Location MWH data = ( Raw WH * CT ratio * PT ratio ) / 10^6
 
 import psycopg2
 from warehouse_db_config import getWarehouseDbConfigDict
-from meter_master_data_classes import MeterMasterData
+from fict_meter_classes import FictMasterData
 import datetime as dt
 from raw_meter_data_adapter import RawMeterDataAdapter
 from  freq_code_convert import freqCodeToFreq
 from app_utils import intersection
 
-class LocationEnergy:
+class FictLocationEnergy:
     conn = None
     masterData = None
     processWindow = dt.timedelta(days=1)
@@ -27,10 +27,28 @@ class LocationEnergy:
         self.conn.close()
     
     def loadMasterData(self):
-        self.masterData = MeterMasterData()
+        self.masterData = FictMasterData()
         self.masterData.loadFromDb()
         
-    def createLocationEnergyForDates(self, fromTime, toTime, locIds=None):
+    # extract all operands
+    @staticmethod
+    def extractLocIdsFromFictFormula(fictForm):
+        opStarted = False
+        operands = []
+        operand = ''
+        for c in fictForm:
+            if c=='(':
+                opStarted = True
+            elif c==')':    
+                if operand!='':
+                    operands.append(operand)
+                    operand=''
+                    opStarted = False
+            elif opStarted == True:
+                operand = operand+c
+        return operands
+    
+    def createFictLocationEnergyForDates(self, fromTime, toTime, locIds=None):
         if toTime < fromTime:
             return
         
@@ -60,27 +78,14 @@ class LocationEnergy:
             if winEnd > toTime:
                 winEnd = toTime
             # process for each location
-            for locId in reqLocIds:
-                # print(locId)
-                # get the master data info of location for the date
-                locMaster = self.masterData.getLocMasterInfo(winStart, locId)
-                # get raw data dataframe for date and then convert to primary data
-                primDataDf = RawMeterDataAdapter.getMeterRawBlksDataFromDb(locMaster.meter_id, winStart, winEnd)
-                if primDataDf.shape[0] == 0:
-                    continue
-                # convert to primary data
-                primDataDf = primDataDf[['act_en_wh','freq_code', 'data_time']]
-                primDataDf.act_en_wh = primDataDf.act_en_wh*locMaster.ct_ratio*locMaster.pt_ratio*(10**-6)
-                primDataDf.data_time = primDataDf.data_time
-                primDataDf.freq_code = freqCodeToFreq(primDataDf.freq_code, locMaster.resolution)
-                dataInsertionTuples = [(locId, r[0], r[1], r[2].strftime('%Y-%m-%d %H:%M:%S')) for r in primDataDf.values]
-                cur = self.conn.cursor()
-                dataText = ','.join(cur.mogrify('(%s,%s,%s,%s)', row).decode("utf-8") for row in dataInsertionTuples)
-                sqlTxt = 'INSERT INTO public.location_energy_data(\
-            	location_id, mwh, freq, data_time) VALUES {0} on conflict (data_time, location_id) \
-                do update set mwh = excluded.mwh, freq = excluded.freq'.format(dataText)
-                cur.execute(sqlTxt)
-                self.conn.commit()
-                cur.close()
-                print('Primary Location data update done')
+            for fictLocId in reqLocIds:
+                print(fictLocId)
+                # get the master data info of fict location for the date
+                fictLocMaster = self.masterData.getLocMasterInfo(winStart, fictLocId)
+                # get the formula for location Id
+                loc_formula = fictLocMaster.loc_formula
+                # get the primary locationIds in the formula
+                primLocIds = FictLocationEnergy.extractLocIdsFromFictFormula(loc_formula)
+                # todo complete this
+                print('Fict Location data update done')
             winStart = winEnd
