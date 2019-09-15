@@ -82,5 +82,5 @@ class LocationEnergy:
                 cur.execute(sqlTxt)
                 self.conn.commit()
                 cur.close()
-                print('Primary Location data update done')
+                print('{0} Primary Location data update done'.format(locId))
             winStart = winEnd
