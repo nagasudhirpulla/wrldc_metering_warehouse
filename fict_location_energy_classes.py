@@ -54,9 +54,10 @@ class FictLocationEnergy:
         return operands
 
     @staticmethod
-    def evalFictFormula(formula, primLocIds, locValSeries):
+    def evalFictFormula(loc_formula, primLocIds, locValSeries):
+        newStr = loc_formula
         for locId in primLocIds:
-            newStr = formula.replace(locId, locValSeries[locId])
+            newStr = newStr.replace(locId, str(locValSeries[locId]))
         return nsp.eval(newStr)
 
     def createFictLocationEnergyForDates(self, fromTime, toTime, locIds=None):
@@ -104,8 +105,8 @@ class FictLocationEnergy:
 
                 # get data of primary locations
                 cur = self.conn.cursor()
-                dataText = ','.join(primLocIds)
-                sqlTxt = 'select (id, location_id, mwh, data_time) \
+                dataText = ','.join(["'{0}'".format(primLoc) for primLoc in primLocIds])
+                sqlTxt = 'select id, location_id, mwh, data_time \
                     from public.location_energy_data\
                     where location_id in ({0})'.format(dataText)
                 primLocDataDf = sqlio.read_sql_query(
@@ -115,9 +116,17 @@ class FictLocationEnergy:
                 fictLocDataDf = primLocDataDf.pivot(
                     index='data_time', columns='location_id', values='mwh')
                 fictLocDataDf['energy'] = fictLocDataDf.apply(
-                    lambda f: FictLocationEnergy.evalFictFormula(loc_formula, primLocIds, f))
+                    lambda f: FictLocationEnergy.evalFictFormula(loc_formula, primLocIds, f), axis=1)
                 # todo data integrity check
-                
-                # todo complete this
-            print('Fict Location data update done')
+                dataInsertionTuples = fictLocDataDf.apply(lambda r: (fictLocId, r.name.strftime('%Y-%m-%d %H:%M:%S'), r.energy), axis=1)
+                cur = self.conn.cursor()
+                dataText = ','.join(cur.mogrify('(%s,%s,%s)', row).decode("utf-8") for row in dataInsertionTuples)
+                sqlTxt = 'INSERT INTO public.fict_location_energy_data(\
+            	location_id, data_time, mwh) VALUES {0} on conflict (data_time, location_id) \
+                do update set mwh = excluded.mwh'.format(dataText)
+                cur.execute(sqlTxt)
+                self.conn.commit()
+                cur.close()
+                print('{0} Fict Location data update done'.format(fictLocId))
             winStart = winEnd
+            print('Completed Fict locations data update at {0}'.format(dt.datetime.now()))
