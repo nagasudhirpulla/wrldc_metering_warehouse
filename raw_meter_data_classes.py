@@ -70,19 +70,24 @@ class RawMeterData:
         # check if we have 9 words
         if len(strs) != 9:
             return None
+
         hr = int(strs[0])
+
         blkFreqCodes = [strs[1], strs[3], strs[5], strs[7]]
-        blkFreqCodes = [int(f.replace('rr', '').replace('aa', ''))
-                        for f in blkFreqCodes]
+        blkFreqCodes = [int(f) for f in blkFreqCodes]
+
         blkActEns = [strs[2], strs[4], strs[6], strs[8]]
-        blkActEns = [float(f.replace('*', '')) for f in blkActEns]
+        blkActEns = [float(f) for f in blkActEns]
+
         dataRes = []
+
         for blkNum in range(0, 4):
             data_time = dt.datetime(date_obj.year, date_obj.month,
                                     date_obj.day, hr, 0, 0) + dt.timedelta(minutes=15*blkNum)
             blkData = RawMeterData(data_time, meter_id,
                                    blkFreqCodes[blkNum], blkActEns[blkNum])
             dataRes.append(blkData)
+
         return dataRes
 
     def dict(self):
@@ -92,7 +97,7 @@ class RawMeterData:
 class RawMeterDataParser:
     @staticmethod
     def ParseRawMeterData(txt):
-        print(txt)
+        # print(txt)
         txtLines = txt.splitlines()
         # check if we have 26 lines
         if len(txtLines) < 26:
@@ -104,5 +109,6 @@ class RawMeterDataParser:
         blksInfo = []
         for lineIter in range(1, 25):
             blksInfo = blksInfo + \
-                RawMeterData.parse(dateObj, meterId, txtLines[lineIter])
+                RawMeterData.parse(dateObj, meterId, txtLines[lineIter].replace(
+                    'aa', '').replace('rr', '').replace('*', ''))
         return dict(cumData=dayInfo, blksData=blksInfo)

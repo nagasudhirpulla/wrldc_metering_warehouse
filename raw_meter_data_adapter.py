@@ -18,7 +18,7 @@ class RawMeterDataAdapter:
     def pushFolderDataToDb(self, folderpath='', recursive=True):
         fileFormats = ['NPD', 'NPE']
         files = [[f for f in glob.glob(
-            folderpath + "**/*." + fileFormat, recursive=True)] for fileFormat in fileFormats]
+            folderpath + "/**/*." + fileFormat, recursive=True)] for fileFormat in fileFormats]
         files = list(chain.from_iterable(files))
         for filepath in files:
             self.pushFileDataToDb(filepath)
@@ -27,6 +27,7 @@ class RawMeterDataAdapter:
         txtFile = open(filepath, "r")
         txt = txtFile.read()
         txtFile.close()
+        print('{0} Raw file push in progress'.format(filepath))
         self.pushRawMeterDataTextToDb(txt)
 
     def pushRawMeterDataTextToDb(self, txt):
