@@ -8,21 +8,88 @@ Location MWH data = ( Raw WH * CT ratio * PT ratio ) / 10^6
 
 import psycopg2
 from warehouse_db_config import getWarehouseDbConfigDict
-from fict_meter_classes import FictMasterData
+from fict_master_data import FictMasterData
 import datetime as dt
 from raw_meter_data_adapter import RawMeterDataAdapter
 from freq_code_convert import freqCodeToFreq
 from app_utils import intersection
 import pandas.io.sql as sqlio
+import glob
+from itertools import chain
 from num_string_parser import NumericStringParser
+from fict_location_data_classes import FictLocationDataParser
 nsp = NumericStringParser()
 
-
-class FictLocationEnergy:
+class FictLocationEnergyAdapter:
     conn = None
     masterData = None
     processWindow = dt.timedelta(days=1)
 
+    def pushFolderDataToDb(self, folderpath='', recursive=True):
+        fileFormats = ['MWH']
+        files = [[f for f in glob.glob(
+            folderpath + "/**/*." + fileFormat, recursive=True)] for fileFormat in fileFormats]
+        files = list(chain.from_iterable(files))
+        for filepath in files:
+            isPushSuccess = self.pushFileDataToDb(filepath)
+            if isPushSuccess == True:
+                print('{0} MWH file push success!'.format(filepath))
+            else:
+                print('{0} MWH file push failed..,'.format(filepath))
+
+    def pushFileDataToDb(self, filepath):
+        txtFile = open(filepath, "r")
+        txt = txtFile.read()
+        txtFile.close()
+        print('{0} MWH file push in progress'.format(filepath))
+        isPushSuccess = self.pushFictMwhDataTextToDb(txt)
+        return isPushSuccess
+
+    def pushFictMwhDataTextToDb(self, txt):
+        txtData = FictLocationDataParser.ParseFictLocationData(txt)
+        if txtData == None:
+            return False
+        blksData = txtData['blksData']
+        isPushSuccess = self.pushFictBlksData(blksData)
+        return isPushSuccess
+
+    def pushFictBlksData(self, blksData):
+        cur = self.conn.cursor()
+        # we will commit in multiples of 100 rows
+        rowIter = 0
+        insIncr = 100
+        numRows = len(blksData)
+        while rowIter < numRows:
+            # set iteration values
+            iteratorEndVal = rowIter+insIncr
+            if iteratorEndVal >= numRows:
+                iteratorEndVal = numRows
+
+            # Create row tuples
+            dataInsertionTuples = []
+            for insRowIter in range(rowIter, iteratorEndVal):
+                dataRow = blksData[insRowIter]
+
+                dataInsertionTuple = (dataRow.data_time.strftime(
+                    '%Y-%m-%d %H:%M:%S'), dataRow.location_id, float(dataRow.mwh))
+                dataInsertionTuples.append(dataInsertionTuple)
+
+            # prepare sql for insertion and execute
+            dataText = ','.join(cur.mogrify('(%s,%s,%s)', row).decode(
+                "utf-8") for row in dataInsertionTuples)
+            sqlTxt = 'INSERT INTO public.fict_location_energy_data(\
+        	data_time, location_id, mwh)\
+        	VALUES {0} on conflict (data_time, location_id) \
+            do update set mwh = excluded.mwh'.format(dataText)
+            cur.execute(sqlTxt)
+            self.conn.commit()
+
+            rowIter = iteratorEndVal
+
+        # close cursor and connection
+        cur.close()
+        return True
+    
     def connectToDb(self):
         warehouseConfigDict = getWarehouseDbConfigDict()
         self.conn = psycopg2.connect(host=warehouseConfigDict['db_host'], dbname=warehouseConfigDict['db_name'],
@@ -60,7 +127,7 @@ class FictLocationEnergy:
             newStr = newStr.replace(locId, str(locValSeries[locId]))
         return nsp.eval(newStr)
 
-    def createFictLocationEnergyForDates(self, fromTime, toTime, locIds=None):
+    def deriveFictLocationEnergyForDates(self, fromTime, toTime, locIds=None):
         if toTime < fromTime:
             return
 
@@ -100,7 +167,7 @@ class FictLocationEnergy:
                 loc_formula = fictLocMaster.loc_formula
 
                 # get the primary locationIds in the formula
-                primLocIds = FictLocationEnergy.extractLocIdsFromFictFormula(
+                primLocIds = FictLocationEnergyAdapter.extractLocIdsFromFictFormula(
                     loc_formula)
 
                 # get data of primary locations
@@ -116,7 +183,7 @@ class FictLocationEnergy:
                 fictLocDataDf = primLocDataDf.pivot(
                     index='data_time', columns='location_id', values='mwh')
                 fictLocDataDf['energy'] = fictLocDataDf.apply(
-                    lambda f: FictLocationEnergy.evalFictFormula(loc_formula, primLocIds, f), axis=1)
+                    lambda f: FictLocationEnergyAdapter.evalFictFormula(loc_formula, primLocIds, f), axis=1)
                 # todo data integrity check
                 dataInsertionTuples = fictLocDataDf.apply(lambda r: (fictLocId, r.name.strftime('%Y-%m-%d %H:%M:%S'), r.energy), axis=1)
                 cur = self.conn.cursor()

@@ -5,11 +5,12 @@ Created on Sat Sep 14 10:50:06 2019
 @author: Nagasudhir
 """
 
-from fict_location_energy_classes import FictLocationEnergy
+from fict_location_energy_adapter import FictLocationEnergyAdapter
 import datetime as dt
 fromTime = dt.datetime(2019, 9, 7)
 toTime = dt.datetime(2019, 9, 8)
-locEn = FictLocationEnergy()
+locEn = FictLocationEnergyAdapter()
 locEn.connectToDb()
-locEn.createFictLocationEnergyForDates(fromTime, toTime, [])
+# locEn.deriveFictLocationEnergyForDates(fromTime, toTime, [])
+locEn.pushFolderDataToDb(folderpath='secret')
 locEn.disconnectDb()
