@@ -6,6 +6,7 @@ Created on Fri Sep 13 17:53:47 2019
 Location MWH data = ( Raw WH * CT ratio * PT ratio ) / 10^6
 """
 
+import os
 import psycopg2
 from warehouse_db_config import getWarehouseDbConfigDict
 from fict_master_data import FictMasterData
@@ -20,6 +21,7 @@ from num_string_parser import NumericStringParser
 from fict_location_data_classes import FictLocationDataParser
 nsp = NumericStringParser()
 
+
 class FictLocationEnergyAdapter:
     conn = None
     masterData = None
@@ -31,6 +33,14 @@ class FictLocationEnergyAdapter:
             folderpath + "/**/*." + fileFormat, recursive=True)] for fileFormat in fileFormats]
         files = list(chain.from_iterable(files))
         for filepath in files:
+            # remove this section after bulk push
+            fName = os.path.basename(filepath)
+            if len(fName) > 9:
+                print('{0} MWH file push skipped!'.format(filepath))
+                continue
+            # remove this section after bulk push
+            
+            # if filepath.length
             isPushSuccess = self.pushFileDataToDb(filepath)
             if isPushSuccess == True:
                 print('{0} MWH file push success!'.format(filepath))
@@ -89,7 +99,7 @@ class FictLocationEnergyAdapter:
         # close cursor and connection
         cur.close()
         return True
-    
+
     def connectToDb(self):
         warehouseConfigDict = getWarehouseDbConfigDict()
         self.conn = psycopg2.connect(host=warehouseConfigDict['db_host'], dbname=warehouseConfigDict['db_name'],
@@ -172,7 +182,8 @@ class FictLocationEnergyAdapter:
 
                 # get data of primary locations
                 cur = self.conn.cursor()
-                dataText = ','.join(["'{0}'".format(primLoc) for primLoc in primLocIds])
+                dataText = ','.join(["'{0}'".format(primLoc)
+                                     for primLoc in primLocIds])
                 sqlTxt = 'select id, location_id, mwh, data_time \
                     from public.location_energy_data\
                     where location_id in ({0})'.format(dataText)
@@ -185,9 +196,11 @@ class FictLocationEnergyAdapter:
                 fictLocDataDf['energy'] = fictLocDataDf.apply(
                     lambda f: FictLocationEnergyAdapter.evalFictFormula(loc_formula, primLocIds, f), axis=1)
                 # todo data integrity check
-                dataInsertionTuples = fictLocDataDf.apply(lambda r: (fictLocId, r.name.strftime('%Y-%m-%d %H:%M:%S'), r.energy), axis=1)
+                dataInsertionTuples = fictLocDataDf.apply(lambda r: (
+                    fictLocId, r.name.strftime('%Y-%m-%d %H:%M:%S'), r.energy), axis=1)
                 cur = self.conn.cursor()
-                dataText = ','.join(cur.mogrify('(%s,%s,%s)', row).decode("utf-8") for row in dataInsertionTuples)
+                dataText = ','.join(cur.mogrify('(%s,%s,%s)', row).decode(
+                    "utf-8") for row in dataInsertionTuples)
                 sqlTxt = 'INSERT INTO public.fict_location_energy_data(\
             	location_id, data_time, mwh) VALUES {0} on conflict (data_time, location_id) \
                 do update set mwh = excluded.mwh'.format(dataText)
@@ -196,4 +209,5 @@ class FictLocationEnergyAdapter:
                 cur.close()
                 print('{0} Fict Location data update done'.format(fictLocId))
             winStart = winEnd
-            print('Completed Fict locations data update at {0}'.format(dt.datetime.now()))
+            print('Completed Fict locations data update at {0}'.format(
+                dt.datetime.now()))
