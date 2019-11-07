@@ -7,8 +7,8 @@ Created on Sat Sep 14 10:50:06 2019
 
 from fict_location_energy_adapter import FictLocationEnergyAdapter
 import datetime as dt
-fromTime = dt.datetime(2013, 1, 1)
-toTime = dt.datetime(2014, 1, 1)
+fromTime = dt.datetime(2019, 9, 15)
+toTime = dt.datetime(2019, 11, 7)
 locEn = FictLocationEnergyAdapter()
 locEn.connectToDb()
 # locEn.deriveFictLocationEnergyForDates(fromTime, toTime, [])
