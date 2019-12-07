@@ -110,5 +110,5 @@ class RawMeterDataParser:
         for lineIter in range(1, 25):
             blksInfo = blksInfo + \
                 RawMeterData.parse(dateObj, meterId, txtLines[lineIter].replace(
-                    'aa', '').replace('rr', '').replace('*', ''))
+                    'aa', ' ').replace('rr', ' ').replace('*', ' '))
         return dict(cumData=dayInfo, blksData=blksInfo)

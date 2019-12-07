@@ -21,7 +21,10 @@ class RawMeterDataAdapter:
             folderpath + "/**/*." + fileFormat, recursive=True)] for fileFormat in fileFormats]
         files = list(chain.from_iterable(files))
         for filepath in files:
-            self.pushFileDataToDb(filepath)
+            try:
+                self.pushFileDataToDb(filepath)
+            except:
+                print("File push error:", sys.exc_info()[0])
 
     def pushFileDataToDb(self, filepath):
         txtFile = open(filepath, "r")
