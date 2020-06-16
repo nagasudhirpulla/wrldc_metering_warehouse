@@ -10,6 +10,7 @@ from warehouse_db_config import getWarehouseDbConfigDict
 import glob
 import pandas.io.sql as sqlio
 from itertools import chain
+import sys
 
 
 class RawMeterDataAdapter:
